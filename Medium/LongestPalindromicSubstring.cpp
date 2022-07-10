@@ -1,6 +1,12 @@
 // TODO(Noah): Need to make faster as exceeding the time-limit on 
 // Leetcode.
-// We anticpate that we can win by saving state about groups of three!
+// - We anticpate that we can win by saving state about groups of three!
+// - We also recognize that we could prolly save some time by allocing all memory needed
+// - for the indices at once ... -> or get away with not needing that indices arr at all ... 
+//    - just using computation at runtime.
+// - and finally, we recognize that a way to make my algo not fast is to have it search the whole string just to 
+//   find that like the last characters are mismatch -> so we could do a double ended search on the palindrome
+//   bounds ... ?
 class Solution {
 public:
     string searchFunc(const string &s, int index, int index2) {
