@@ -2,13 +2,12 @@
 // - We recognize that a way to make my algo not fast is to have it search the whole string just to 
 //   find that like the last characters are mismatch -> so we could do a double ended search on the palindrome
 //   bounds ... ?
-
 typedef struct sc {
     short maxThree;
     short maxTwo;
 } sc_t;
-
 class Solution {
+    int indices[1000];
 public:
     // even cases.
     inline 
@@ -63,13 +62,14 @@ public:
         int maxPosLen = len; // What we know is possible.
         int mi = len / 2;
         std::unordered_map<int, sc_t> cache;
-        std::vector<int> indices;
-        indices.push_back(mi); // this if built up over the for loop
+        memset(indices, 0, sizeof(indices));
+        int indInd = 0;
+        indices[indInd++] = mi; // this if built up over the for loop
         bool indDir = (len % 2 == 0);
         int indicesLeft = mi;
-        int indicesRight = mi;
+        int indicesRight = mi;  
         for (int maxPosLen = len; maxPosLen >= 1; maxPosLen--) {        
-            for (int j = 0; j < indices.size(); j++) {
+            for (int j = 0; j < indInd; j++) {
                 int _sLen;
                 if (cache.count(indices[j]) == 0) {
                     sc_t _sct;
@@ -101,9 +101,9 @@ public:
             }
             // add index to list of indices
             if (indDir) {
-                indices.push_back( --indicesLeft );
+                indices[indInd++] = --indicesLeft;
             } else {
-                indices.push_back( ++indicesRight );
+                indices[indInd++] = ++indicesRight;
             }
             indDir = !indDir;  
         }
