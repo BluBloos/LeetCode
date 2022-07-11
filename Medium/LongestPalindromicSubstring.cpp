@@ -2,12 +2,23 @@
 // - We recognize that a way to make my algo not fast is to have it search the whole string just to 
 //   find that like the last characters are mismatch -> so we could do a double ended search on the palindrome
 //   bounds ... ?
+
+// Some really easy things to do ...
+
+// Get rid of std::vector and just use flat array with malloc and memcpy (to zero out)!
+// Goal -> no allocs.
+
+
 typedef struct sc {
     short maxThree;
     short maxTwo;
 } sc_t;
+
 class Solution {
+    
     int indices[1000];
+    sc_t cache[1000];
+    
 public:
     // even cases.
     inline 
@@ -61,22 +72,22 @@ public:
         int len = s.size();
         int maxPosLen = len; // What we know is possible.
         int mi = len / 2;
-        std::unordered_map<int, sc_t> cache;
+        
+        // std::unordered_map<int, sc_t> cache;
+        memset(cache, 0, sizeof(cache));
         memset(indices, 0, sizeof(indices));
+        
         int indInd = 0;
         indices[indInd++] = mi; // this if built up over the for loop
+        
         bool indDir = (len % 2 == 0);
         int indicesLeft = mi;
-        int indicesRight = mi;  
+        int indicesRight = mi;
+        
         for (int maxPosLen = len; maxPosLen >= 1; maxPosLen--) {        
             for (int j = 0; j < indInd; j++) {
                 int _sLen;
-                if (cache.count(indices[j]) == 0) {
-                    sc_t _sct;
-                    _sct.maxThree = 0;
-                    _sct.maxTwo = 0;
-                    cache[indices[j]] = _sct;
-                }
+                
                 if (maxPosLen % 2 == 0) {
                     if (cache[indices[j]].maxTwo == 0) {
                         _sLen = searchFunc(s, indices[j] - 1, indices[j]);
