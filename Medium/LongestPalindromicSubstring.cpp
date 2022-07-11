@@ -1,19 +1,27 @@
-// TODO(Noah): Need to make faster as exceeding the time-limit on 
-// Leetcode.
-// - We anticpate that we can win by saving state about groups of three!
-// - We also recognize that we could prolly save some time by allocing all memory needed
-// - for the indices at once ... -> or get away with not needing that indices arr at all ... 
-//    - just using computation at runtime.
-// - and finally, we recognize that a way to make my algo not fast is to have it search the whole string just to 
+// - We recognize that we could prolly save some time by allocing all memory needed up-front.
+// - We recognize that a way to make my algo not fast is to have it search the whole string just to 
 //   find that like the last characters are mismatch -> so we could do a double ended search on the palindrome
 //   bounds ... ?
+
+typedef struct sc {
+    short maxThree;
+    short maxTwo;
+} sc_t;
+
 class Solution {
 public:
-    string searchFunc(const string &s, int index, int index2) {
+    // even cases.
+    inline 
+    string buildPalindrome(const string &s, int index, int index2, int len) {
+        // index and index2 are middle of palindrome, and len is total len (including middle).
+        return s.substr(index - (len - 2) / 2, len);
+    }
+    inline
+    int searchFunc(const string &s, int index, int index2) {
         // even case search is special because we need to first validate that 
         // this even case is even valid.
         if (s[index] != s[index2]) {
-            return s.substr(index2, 1);
+            return 1;
         }
         int sLen = s.size(); int i;
         for (i = 1; true; i++) {
@@ -22,14 +30,20 @@ public:
             char leftChar = s[index - i];
             char rightChar = s[index2 + i];
             if (leftChar != rightChar) {
-                // mismatch. return current substr.
-                return s.substr(index - (i - 1), 2 + 2 * (i - 1));
+                // mismatch.
+                break;
             }
         }
-        return s.substr( index - (i - 1), 2 + 2 * (i - 1) ); // never hit the mismatch case. 
+        return 2 + 2 * (i - 1);
     }
-    // odd case
-    string searchFunc(const string &s, int index) {
+    // odd cases
+    inline 
+    string buildPalindrome(const string &s, int index, int len) {
+        // index is middle of palindrome, and len is total len.
+        return s.substr(index - (len - 1) / 2, len);
+    }
+    inline 
+    int searchFunc(const string &s, int index) {
         int sLen = s.size();
         int i;
         for (i = 1; true; i++) {
@@ -38,38 +52,51 @@ public:
             char leftChar = s[index - i];
             char rightChar = s[index + i];
             if (leftChar != rightChar) {
-                // mismatch. return current substr.
-                return s.substr(index - (i - 1), 1 + 2 * (i - 1));
+                break;
             }
         }
-        return s.substr( index - (i - 1), 1 + 2 * (i - 1) ); // never hit the mismatch case.
+        return 1 + 2 * (i - 1);
     }
-    string longestPalindrome(string s) {   
+    // algo
+    string longestPalindrome(string s) {  
         int len = s.size();
-        string result = ""; // Current highest match.
         int maxPosLen = len; // What we know is possible.
         int mi = len / 2;
+        std::unordered_map<int, sc_t> cache;
         std::vector<int> indices;
         indices.push_back(mi); // this if built up over the for loop
         bool indDir = (len % 2 == 0);
         int indicesLeft = mi;
         int indicesRight = mi;
         for (int maxPosLen = len; maxPosLen >= 1; maxPosLen--) {        
-            if (maxPosLen == result.size()) {
-                break; // fell onto the lower-bound.
-            }
             for (int j = 0; j < indices.size(); j++) {
-                string _s;
-                if (maxPosLen % 2 == 0) {
-                    // TODO: Make the algo faster by saving state about groups of three and groups of two.
-                    _s = searchFunc(s, indices[j] - 1, indices[j]);
-                } else {
-                    _s = searchFunc(s, indices[j]);
+                int _sLen;
+                if (cache.count(indices[j]) == 0) {
+                    sc_t _sct;
+                    _sct.maxThree = 0;
+                    _sct.maxTwo = 0;
+                    cache[indices[j]] = _sct;
                 }
-                int _sLen = _s.size();
-                if (_sLen == len) { return _s; } 
-                else if (_sLen > result.size()) {
-                    result = _s; // collapse the lower-bound.
+                if (maxPosLen % 2 == 0) {
+                    if (cache[indices[j]].maxTwo == 0) {
+                        _sLen = searchFunc(s, indices[j] - 1, indices[j]);
+                        cache[indices[j]].maxTwo = _sLen;
+                    } else {
+                        _sLen = cache[indices[j]].maxTwo;
+                    }
+                } else {
+                    if (cache[indices[j]].maxThree == 0) {
+                        _sLen = searchFunc(s, indices[j]);
+                        cache[indices[j]].maxThree = _sLen;
+                    } else {
+                      
+                        _sLen = cache[indices[j]].maxThree;
+                    }
+                }
+                if (_sLen == maxPosLen) { 
+                    return  (maxPosLen % 2 == 0) ? 
+                                buildPalindrome(s, indices[j] - 1, indices[j], maxPosLen) :
+                                buildPalindrome(s, indices[j], maxPosLen); 
                 }
             }
             // add index to list of indices
@@ -80,6 +107,6 @@ public:
             }
             indDir = !indDir;  
         }
-        return result;
+        return ""; // should never reach this case.
     }
 };
