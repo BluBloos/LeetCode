@@ -1,3 +1,9 @@
+// TODO(Noah): Since the list is sorted, there is actually no need to
+// store if things have been seen already. It's more of like this collapsing thing,
+// because we know that duplicates are always adjacent.
+//
+// Also, it is possible to remove the checking for the three different cases?
+
 /**
  * Definition for singly-linked list.
  * struct ListNode {
