@@ -10,22 +10,17 @@
  */
 class Solution {
 public:
-    ListNode* deleteDuplicates(ListNode* head) {
+    ListNode *deleteDuplicates(ListNode* head) {
         // Presuming that the list is sorted, this problem becomes incredibly simple.
         ListNode *_head = head;
         ListNode *prev = nullptr;
         while (head != nullptr) {
-            bool deleted = false;
-            if (deleted = ((prev != nullptr) ? prev->val == head->val : false)) {
-                ListNode *next = head->next;
-                prev->next = next;
-            }
-            // advance to next item.
-            if (deleted) {
-                ListNode *__head = head;
+            if ((prev != nullptr) ? prev->val == head->val : false) {
+                // delete
+                prev->next = head->next;
                 head = head->next;
-                delete __head;
             } else {
+                // no delete
                 prev = head;
                 head = head->next;
             }
