@@ -8,14 +8,15 @@
  *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
+static ListNode _sentinel(-200, nullptr);
 class Solution {
 public:
     ListNode *deleteDuplicates(ListNode* head) {
         // Presuming that the list is sorted, this problem becomes incredibly simple.
         ListNode *_head = head;
-        ListNode *prev = nullptr;
+        ListNode *prev = &_sentinel;
         while (head != nullptr) {
-            if ((prev != nullptr) ? prev->val == head->val : false) {
+            if (prev->val == head->val) {
                 // delete
                 prev->next = head->next;
                 head = head->next;
