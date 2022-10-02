@@ -2,20 +2,14 @@ typedef struct pair {
     int Y;
     int X;
 } pair_t;
-
 class Solution {
 public:
     pair_t stack[1024] = {};
     inline int bruteForce(vector<vector<char>>& grid) {
         int m = grid.size();
         int n = grid[0].size();
-        // can we think of a brute force method for solving?
-        // sure: as soon as you hit a 1, do a flood fill outwards.
-        // the "visited" arr is embed in the grid, flip the 1s to a 0.
         int numIslands = 0;
         int stackCount = 0;
-        //memset(stack, 0, 45000 * sizeof(pair_t));
-        //std::vector<pair_t> stack = {};
         for (int y = 0; y < m; y++) {
             for (int x = 0; x < n; x++) {
                 if (grid[y][x] == '1') {
